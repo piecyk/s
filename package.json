@@ -20,7 +20,7 @@
     "webpack": "^1.7.3"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "./node_modules/.bin/webpack --optimize-minimize --optimize-occurence-order && node ./build/bundle.js"
   },
   "author": "",
   "license": "ISC"
