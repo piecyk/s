@@ -1,5 +1,6 @@
 var path = require('path');
 var fs = require('fs');
+var webpack = require('webpack');
 
 var nodeModules = {};
 fs.readdirSync('node_modules')
@@ -13,7 +14,7 @@ fs.readdirSync('node_modules')
 module.exports = {
   entry: "./src/main.js",
   target: 'node',
-  //devtool: '#eval-source-map',
+  devtool: 'source-map',
   debug: true,
   output: {
     path: path.join(__dirname, 'build'),
@@ -29,5 +30,8 @@ module.exports = {
     loaders: [
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'}
     ]
-  }
+  },
+  plugins: [
+    new webpack.BannerPlugin('require("source-map-support").install();', { raw: true, entryOnly: false })
+  ]
 };

@@ -43,6 +43,6 @@ gulp.task('run', ['backend-watch'], function() {
     ext: 'noop'
   }).on('restart', function() {
     gutil.log("[nodemon] restart");
-  })
-  .on("error", function (err) { throw new gutil.PluginError("[nodemon]", err); });
+  });
+
 });
