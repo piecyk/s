@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
-import crypto   from 'crypto';
-import uuid     from 'node-uuid';
+//import crypto   from 'crypto';
+//import uuid     from 'node-uuid';
+import bcryptjs from 'bcryptjs';
 import _        from 'lodash';
+import Q        from 'q';
 
 let userSchema = new mongoose.Schema({
   email: {
@@ -9,11 +11,9 @@ let userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  hashed_password: String,
-  salt: {
+  password: {
     type: String,
-    required: true,
-    default: uuid.v1
+    required: true
   },
   created: {
     type: Date,
@@ -21,18 +21,34 @@ let userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.virtual('password')
-  .set(function (password) {
-    this.hashed_password = this.encryptPassword(password);
+userSchema.pre('save', function (next) {
+  let user = this;
+  if (this.isModified('password') || this.isNew) {
+    bcryptjs.genSalt(10, function (err, salt) {
+      if (err) {
+        return next(err);
+      }
+      bcryptjs.hash(user.password, salt, function (err, hash) {
+        if (err) {
+          return next(err);
+        }
+        user.password = hash;
+        return next();
+      });
+    });
+  } else {
+    return next();
+  }
+});
+
+userSchema.methods.comparePassword = function (passw, cb) {
+  bcryptjs.compare(passw, this.password, function (err, isMatch) {
+    if (err) {
+      return cb(err);
+    }
+    return cb(null, isMatch);
   });
-
-userSchema.method('authenticate', function(plainText) {
-  return this.encryptPassword(plainText) === this.hashed_password;
-});
-
-userSchema.method('encryptPassword', function(password) {
-  return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
-});
+};
 
 export let User = mongoose.model('User', userSchema);
 
@@ -41,18 +57,27 @@ export let create = (email, password, res) => {
   let user = new User({email: email, password: password});
   user.save((err, result) => {
     if (err) {
-      return res.json(err);
+      return res.status(401).json(err);
     };
     return res.json(user.toObject());
   });
 };
 
-export let login = (email, password, res) => {
+export let login = (email, password) => {
+  let deferred = Q.defer();
+
   User.findOne({email: email}, function(err, user) {
-    if (user && user.authenticate(password)) {
-      return res.json(user.toObject());
-    } else {
-      return res.json("wrong password");
+    if (err || _.isNull(user)) {
+      return deferred.reject(err);
     }
+    user.comparePassword(password, function (err, isMatch) {
+      if (isMatch && !err) {
+        return deferred.resolve(user);
+      } else {
+        return deferred.reject(err);
+      }
+    });
   });
+
+  return deferred.promise;
 };
