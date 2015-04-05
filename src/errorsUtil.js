@@ -22,6 +22,7 @@ export class NotFoundError extends Error {
 };
 
 export let errorHandler = function(err, req, res, next) {
+  //console.log(err);
 
   let errorType = typeof err,
       code = 500,

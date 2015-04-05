@@ -10,3 +10,14 @@ export let cors = function(req, res, next) {
     next();
   }
 };
+
+export let tokenize = function(string) {
+  let tokens = {};
+  string.split('&').forEach(function(pair) {
+    var segments = pair.split('=', 2).map(decodeURIComponent);
+    if(segments[0]) {// Key must be non-empty.
+      tokens[segments[0]] = segments[1];
+    }
+  });
+  return tokens;
+};

@@ -52,15 +52,17 @@ userSchema.methods.comparePassword = function (passw, cb) {
 
 export let User = mongoose.model('User', userSchema);
 
-//TODO: re-factor to use promise add jwt,
-export let create = (email, password, res) => {
+export let create = (email, password) => {
+  let deferred = Q.defer();
   let user = new User({email: email, password: password});
+
   user.save((err, result) => {
     if (err) {
-      return res.status(401).json(err);
+      return deferred.reject(err);
     };
-    return res.json(user.toObject());
+    return deferred.resolve(user.toObject());
   });
+  return deferred.promise;
 };
 
 export let login = (email, password) => {
