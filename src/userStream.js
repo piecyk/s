@@ -1,6 +1,5 @@
 export class UserStream {
   constructor(io) {
-    console.log('UserStream');
     this.sockets = [];
 
     io.on('connection', socket => {

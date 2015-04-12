@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "async": "^0.9.0",
     "babel-core": "^5.0.7",
     "babel-loader": "^5.0.0",
     "bcryptjs": "^2.1.0",
@@ -25,8 +26,15 @@
     "webpack": "^1.7.3"
   },
   "scripts": {
-    "start": "./node_modules/.bin/webpack --optimize-minimize --optimize-occurence-order && node ./build/bundle.js"
+    "start": "./node_modules/.bin/webpack --optimize-minimize --optimize-occurence-order && node ./build/bundle.js",
+    "test": "./node_modules/.bin/mocha --compilers js:./node_modules/babel-core/register.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^2.2.0",
+    "mocha": "^2.2.4",
+    "superagent": "^1.1.0",
+    "supertest": "^0.15.0"
+  }
 }

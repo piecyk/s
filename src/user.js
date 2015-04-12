@@ -21,24 +21,36 @@ let userSchema = new mongoose.Schema({
   }
 });
 
+//TODO: wiem wiem, senior plakal jak commitowal
 userSchema.pre('save', function (next) {
-  let user = this;
-  if (this.isModified('password') || this.isNew) {
-    bcryptjs.genSalt(10, function (err, salt) {
-      if (err) {
-        return next(err);
-      }
-      bcryptjs.hash(user.password, salt, function (err, hash) {
-        if (err) {
-          return next(err);
-        }
-        user.password = hash;
+  let self = this;
+
+  mongoose.models.User.findOne({email: self.email},function(err, user) {
+    if (err) {
+      return next(err);
+    } else if (user) {
+      user.invalidate("email","email must be unique");
+      return next(new Error("email must be unique"));
+    } else {
+      if (self.isModified('password') || self.isNew) {
+        bcryptjs.genSalt(10, function (err, salt) {
+          if (err) {
+            return next(err);
+          }
+          bcryptjs.hash(self.password, salt, function (err, hash) {
+            if (err) {
+              return next(err);
+            }
+            self.password = hash;
+            return next();
+          });
+        });
+      } else {
         return next();
-      });
-    });
-  } else {
-    return next();
-  }
+      }
+    }
+  });
+
 });
 
 userSchema.methods.comparePassword = function (passw, cb) {
@@ -50,7 +62,9 @@ userSchema.methods.comparePassword = function (passw, cb) {
   });
 };
 
-export let User = mongoose.model('User', userSchema);
+
+export const User = mongoose.models.User ?
+  mongoose.model('User') : mongoose.model('User', userSchema);
 
 export let create = (email, password) => {
   let deferred = Q.defer();
@@ -62,6 +76,7 @@ export let create = (email, password) => {
     };
     return deferred.resolve(user.toObject());
   });
+
   return deferred.promise;
 };
 
