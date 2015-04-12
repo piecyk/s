@@ -4,10 +4,11 @@ import bodyParser from 'body-parser';
 import {cors}     from './util';
 import routes     from './routes';
 import morgan     from 'morgan';
-//import socketio   from 'socket.io';
 
-//import socketioJwt                   from 'socketio-jwt';
-import {UserStream}                  from './userStream';
+import socketio     from 'socket.io';
+import {UserStream} from './userStream';
+//import socketioJwt  from 'socketio-jwt';
+
 import {errorHandler, NotFoundError} from './errorsUtil';
 import expressJwt                    from 'express-jwt';
 import {JWT_SECRET}                  from './config';
@@ -25,8 +26,32 @@ app.use('/', routes);
 app.all("*", (req, res, next) => next(new NotFoundError("404")));
 app.use(errorHandler);
 
-//TODO: http://stackoverflow.com/questions/29439041/browsersync-continual-get-using-express-gulp
-//let io = socketio.listen(server);
+
+let io = socketio.listen(server);
+let sockets = [];
+
+io.on('connection', socket => {
+  sockets.push(socket);
+  console.log('connected: ', sockets.length);
+
+  socket.on('ping', function (m) {
+    socket.emit('pong', m);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('disconnected');
+    sockets = sockets.filter(s => s !== socket);
+  });
+});
+
+//TODO: for test;
+setInterval(function () {
+  let now = Date();
+  //console.log(`send time: ${now}`);
+  io.sockets.emit('time', now);
+}, 5000);
+
+
 //TODO: add namespace
 //let userStream = new UserStream(io);
 //https://github.com/auth0/socketio-jwt/issues/27

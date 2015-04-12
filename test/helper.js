@@ -1,10 +1,11 @@
-import request  from 'supertest';
-import server   from './../src/app';
-import mongoose from 'mongoose';
-import async    from 'async';
-import _        from 'lodash';
-import Q        from 'q';
-import chai     from 'chai';
+import request        from 'supertest';
+import server         from './../src/app';
+import mongoose       from 'mongoose';
+import async          from 'async';
+import _              from 'lodash';
+import Q              from 'q';
+import chai           from 'chai';
+import socketIoClient from 'socket.io-client';
 
 
 let db_uri = 'mongodb://localhost/db_test';
@@ -37,7 +38,19 @@ before(function(done) {
 export let expect = chai.expect;
 
 // agent
+server.listen(59177);
 export let a = request.agent(server);
+
+// io
+//TODO: fix url
+let socketURL = 'http://0.0.0.0:59177';
+let options ={
+  transports: ['websocket'],
+  'force new connection': true
+};
+export let ioConnect = function() {
+  return socketIoClient.connect(socketURL, options);
+};
 
 // user
 export let UserHelper = (function() {
