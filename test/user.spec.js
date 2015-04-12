@@ -69,12 +69,11 @@ describe('User flows', () => {
     );
   });
 
+  // when running one test use it.only('test very...
   it('test very secure ping endpoint using helper', (done) => {
-    return UserHelper.getApi('/api/v1/ping').then(
-      (body) => {
-        expect(body).to.have.property('_id');
-        done();
-      });
+    return UserHelper.getApi('/api/v1/ping')
+      .then((body) => {expect(body).to.have.property('_id');})
+      .then(done);
   });
 
 });

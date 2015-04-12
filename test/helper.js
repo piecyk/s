@@ -58,7 +58,11 @@ export let UserHelper = (function() {
 
   function getToken() {
     return userPost('/login', defaultUser, 200).then(
-      (res) => {return res.body.token; });
+      (res) => { return res.body.token; },
+      (err) => { return userPost('/register', defaultUser, 200).then(
+        (res) => { return res.body.token; }
+      );}
+    );
   }
 
   return {
