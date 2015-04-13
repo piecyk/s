@@ -43,6 +43,8 @@ export let a = request.agent(server);
 
 // io
 //TODO: fix url
+//TODO: wrap it, to use helper object
+//let socketURL = 'https://glacial-bastion-4043.herokuapp.com/';
 let socketURL = 'http://0.0.0.0:59177';
 let options ={
   transports: ['websocket'],
@@ -51,6 +53,13 @@ let options ={
 export let ioConnect = function() {
   return socketIoClient.connect(socketURL, options);
 };
+export function createIos(howMany) {
+  return _.map(new Array(howMany), () => ioConnect());
+}
+export let cleanIos = (ios) => {
+  _.each(ios, (io) => io.disconnect());
+};
+
 
 // user
 export let UserHelper = (function() {

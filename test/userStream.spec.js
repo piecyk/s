@@ -1,32 +1,77 @@
-import { expect, UserHelper, ioConnect } from './helper';
+import { a, expect, UserHelper, ioConnect, createIos, cleanIos } from './helper';
 // import Q                                 from 'q';
 
-describe.only('UserStream flows', () => {
+describe('UserStream flows', () => {
 
-  it('test', (done) => {
-    let pongs = [];
-    let checkPong = function(client){
+  it('testPingPong', (done) => {
+    let ios = createIos(2);
+    let msgs = [];
+
+    let check = function(client){
       client.on('pong', function(msg){
-        pongs.push((msg));
-        if (pongs.length === 2){
+        msgs.push((msg));
+        if (msgs.length === 2){
+          cleanIos(ios);
           done();
         };
       });
     };
 
-    let io1 = ioConnect();
-    let io2 = ioConnect();
-
-    io1.on('connect', function(data){
-      checkPong(io2);
-      io1.emit('ping', 'ping?> from io1');
+    ios[0].on('connect', function(data){
+      check(ios[0]);
+      ios[0].emit('ping', 'ping?> from io1');
     });
 
-    io2.on('connect', function(data){
-      checkPong(io2);
-      io2.emit('ping', 'ping?> from io2');
+    ios[1].on('connect', function(data){
+      check(ios[1]);
+      ios[1].emit('ping', 'ping?> from io2');
     });
 
+  });
+
+  it('emit to all users', (done) => {
+    let ios = createIos(2);
+    let msgs = [];
+
+    let check = function(client){
+      client.on('userStream:main', function(msg){
+        msgs.push((msg));
+        if (msgs.length === 6) {
+          cleanIos(ios);
+          done();
+        };
+      });
+    };
+
+    ios[0].on('connect', () => check(ios[0]));
+    ios[1].on('connect', () => check(ios[1]));
+
+    // register new user
+    UserHelper.register();
+    UserHelper.register();
+    UserHelper.register();
+  });
+
+  it('public ping', (done) => {
+    let ios = createIos(2);
+    let msgs = [];
+
+    let check = function(client){
+      client.on('userStream:main', function(msg){
+        console.log('msg:', msg);
+        msgs.push((msg));
+        if (msgs.length === 2) {
+          cleanIos(ios);
+          done();
+        };
+      });
+    };
+
+    ios[0].on('connect', () => check(ios[0]));
+    ios[1].on('connect', () => check(ios[1]));
+
+    // register new user
+    a.get('/ping').expect(200).end();
   });
 
 });

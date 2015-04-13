@@ -1,25 +1,30 @@
-export class UserStream {
-  // constructor(io) {
-  //   this.sockets = [];
+//import socketio from 'socket.io';
 
-  //   io.on('connection', socket => {
-  //     console.log('connected');
-  //     this.sockets.push(socket);
+export let io;
+export let sockets = [];
 
-  //     socket.on('ping', function (m) {
-  //       socket.emit('pong', m);
-  //     });
-
-  //     socket.on('disconnect', () => {
-  //       this.sockets = this.sockets.filter(s => s !== socket);
-  //     });
-  //   });
-
-  //   // for testing
-  //   setInterval(function () {
-  //     let now = Date();
-  //     //console.log(`send time: ${now}`);
-  //     io.sockets.emit('time', now);
-  //   }, 5000);
-  // }
+//TODO: maybe not best why, but for now ...
+export function setIo(_io) {
+  io = _io;
+  io.on('connection', socket => { stream(socket); });
 };
+
+function stream(socket) {
+
+  sockets.push(socket);
+  console.log('connected: ', sockets.length);
+
+  socket.on('ping', function (m) {
+    socket.emit('pong', m);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('disconnected');
+    sockets = sockets.filter(s => s !== socket);
+  });
+
+};
+
+export function emitToUsers(msg) {
+  io.sockets.emit('userStream:main', msg);
+}
