@@ -15,6 +15,9 @@ function BaseGeoSchema() {
     },
     created: {
       type: Date, default: Date.now
+    },
+    user: {
+      type: m.Schema.Types.ObjectId, index: true, required: false, ref: 'User'
     }
   });
 }
@@ -32,7 +35,7 @@ export const UserAreaSchema = new BaseGeoSchema({
 export const UserAreaModel = m.models.UserAreaModel ? m.model('UserAreaModel') : GeoModel.discriminator('UserAreaModel', GeoSchema);
 
 
-export let create = (userId, lng, lat, radius) => {
-  let params = { loc: [lng, lat], radius: radius};
+export let create = (_id, lng, lat, radius) => {
+  let params = {user: _id, loc: [lng, lat], radius: radius};
   return (new UserAreaModel(params)).saveAsync().catch(err => console.log(err));
 };
