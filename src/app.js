@@ -6,7 +6,7 @@ import routes     from './routes';
 import morgan     from 'morgan';
 
 import socketio     from 'socket.io';
-import {setIo}      from './userStream';
+import {setIo}      from './user/userStream';
 //import socketioJwt  from 'socketio-jwt';
 
 import {errorHandler, NotFoundError} from './errorsUtil';

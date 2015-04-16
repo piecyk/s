@@ -2,8 +2,10 @@ import mongoose from 'mongoose';
 import _        from 'lodash';
 import P        from 'bluebird';
 import util     from 'util';
+import logger   from 'mm-node-logger';
 
-let m = P.promisifyAll(mongoose);
+const l = logger(module);
+const m = P.promisifyAll(mongoose);
 
 function BaseGeoSchema() {
   m.Schema.apply(this, arguments);
@@ -36,6 +38,7 @@ export const UserAreaModel = m.models.UserAreaModel ? m.model('UserAreaModel') :
 
 
 export let create = (_id, lng, lat, radius) => {
+  l.info('create user area');
   let params = {user: _id, loc: [lng, lat], radius: radius};
-  return (new UserAreaModel(params)).saveAsync().catch(err => console.log(err));
+  return (new UserAreaModel(params)).saveAsync();
 };

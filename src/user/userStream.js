@@ -12,7 +12,7 @@ export function setIo(_io) {
 function stream(socket) {
 
   sockets.push(socket);
-  console.log('connected: ', sockets.length);
+  console.log('connected: ', socket.handshake.address);
 
   socket.on('ping', function (m) {
     socket.emit('pong', m);

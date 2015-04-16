@@ -1,5 +1,5 @@
 import { a, expect, UserHelper, ioConnect, createIos, cleanIos } from './helper';
-// import Q                                 from 'q';
+
 
 describe('UserStream flows', () => {
 
@@ -9,6 +9,7 @@ describe('UserStream flows', () => {
 
     let check = function(client){
       client.on('pong', function(msg){
+        console.log(msg);
         msgs.push((msg));
         if (msgs.length === 2){
           cleanIos(ios);
@@ -46,10 +47,10 @@ describe('UserStream flows', () => {
     ios[0].on('connect', () => check(ios[0]));
     ios[1].on('connect', () => check(ios[1]));
 
-    // register new user
     UserHelper.register();
     UserHelper.register();
     UserHelper.register();
+
   });
 
   it('public ping', (done) => {
@@ -70,8 +71,11 @@ describe('UserStream flows', () => {
     ios[0].on('connect', () => check(ios[0]));
     ios[1].on('connect', () => check(ios[1]));
 
-    // register new user
-    a.get('/ping').expect(200).end();
+    a.get('/ping')
+      .expect(200)
+      .end(function(err, res) {
+        if (err) { throw err; }
+      });
   });
 
 });

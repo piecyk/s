@@ -1,9 +1,9 @@
 //TODO: re-factor
 export class UnauthorizedAccessError extends Error {
   constructor(code, error) {
-    super(this, error.message);
+    super(this, error);
     this.name = "UnauthorizedAccessError";
-    this.message = error.message;
+    this.message = error;
     this.code = code;
     this.status = 401;
     this.inner = error;
@@ -12,9 +12,9 @@ export class UnauthorizedAccessError extends Error {
 
 export class NotFoundError extends Error {
   constructor(code, error) {
-    super(this, error.message);
+    super(this, error);
     this.name = "NotFoundError";
-    this.message = error.message;
+    this.message = error;
     this.code = code;
     this.status = 404;
     this.inner = error;
@@ -22,7 +22,7 @@ export class NotFoundError extends Error {
 };
 
 export let errorHandler = function(err, req, res, next) {
-  //console.log(err);
+  console.log(err);
 
   let errorType = typeof err,
       code = 500,

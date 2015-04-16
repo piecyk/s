@@ -29,6 +29,7 @@ before(function(done) {
 
   mongoose.connect(db_uri, () => {
     dropCollections(function() {
+      console.log('droped Collections');
       done();
     });
   });
@@ -67,10 +68,10 @@ export let UserHelper = (function() {
     "email":"test@wp.pl", "password":"test"
   };
 
-  function userPost(uri, params, code) {
+  function userA(method, uri, params, code) {
     let deferred = Q.defer();
 
-    a.post(uri).send(params).expect(code).end(function(err, res) {
+    a[method](uri).send(params).expect(code).end(function(err, res) {
       if (err) { return deferred.reject(err); }
       return deferred.resolve(res);
     });
@@ -78,11 +79,13 @@ export let UserHelper = (function() {
     return deferred.promise;
   }
 
-  function getToken() {
-    return userPost('/login', defaultUser, 200).then(
+  function getToken(user) {
+    return userA('post', '/login', user || defaultUser, 200).then(
       (res) => { return res.body.token; },
-      (err) => { return userPost('/register', defaultUser, 200).then(
-        (res) => { return res.body.token; }
+      (err) => { return userA('post', '/register', defaultUser, 200).then(
+        (res) => {
+          return res.body.token;
+        }
       );}
     );
   }
@@ -90,28 +93,33 @@ export let UserHelper = (function() {
   return {
     model: mongoose.models.User,
     register: function(params, code) {
-      return userPost('/register',
-                      params || defaultUser,
-                      code || 200);
+      return userA('post', '/register',
+                   params || defaultUser,
+                   code || 200);
     },
     login: function(params, code) {
-      return userPost('/login',
-                      params || defaultUser,
-                      code || 200);
+      return userA('post', '/login',
+                   params || defaultUser,
+                   code || 200);
+
 
     },
-    getApi: function(uri, params, code, headers) {
-      return getToken().then(
+    api: function(method, uri, params, code, headers, user) {
+      return getToken(user).then(
         (token) => {
           let deferred = Q.defer();
           let _headers = { 'Authorization': `Bearer ${token}` };
 
-          a.get(uri).set(_.extend(_headers, headers))
+          a[method](uri).set(_.extend(_headers, headers))
             .send(params)
             .expect(code || 200).end(function(err, res) {
-              if (err) { return deferred.reject(err); }
+              if (err) {
+                console.log(err);
+                return deferred.reject(err);
+              }
               return deferred.resolve(res.body);
             });
+
           return deferred.promise;
         });
     }
