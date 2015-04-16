@@ -42,7 +42,7 @@ describe('User flows', () => {
       (res) => {
         expect(res.body).to.have.property('token');
 
-        UserHelper.api('put', '/api/v1/user', user2, null, null, user).then(
+        UserHelper.api('put', '/api/v1/users', user2, null, null, user).then(
           (res) => {
             UserHelper.login(user2).then(() => done());
           },
@@ -104,7 +104,7 @@ describe('User flows', () => {
 
   // when running one test use it.only('test very...
   it('get user details', (done) => {
-    return UserHelper.api('get', '/api/v1/user')
+    return UserHelper.api('get', '/api/v1/users')
       .then(body => {
         console.log(body);
         expect(body).to.have.property('_id');

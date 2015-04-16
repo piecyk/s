@@ -10,17 +10,21 @@ const l = function(msg) {winston.log('info', 'userArea:', msg);};
 const m = P.promisifyAll(mongoose);
 
 export const UserAreaSchema = new BaseGeoSchema({
-  radius: {
-    type: Number, min: 1, max: 20, required: true
-  }
+  name: String,
+  radius: {type: Number, min: 1, max: 20, required: true}
 });
 export const UserAreaModel = m.models.UserAreaModel ? m.model('UserAreaModel') : GeoModel.discriminator('UserAreaModel', GeoSchema);
 
 
-export let create = (_id, lng, lat, radius) => {
+export let create = (_id, lng, lat, radius, name) => {
   l('create user area');
-  let params = {user: _id, loc: [lng, lat], radius: radius};
+  let params = {user: _id, loc: [lng, lat], radius: radius, name: name};
   return (new UserAreaModel(params)).saveAsync().then(function(area) {
     return area[0];
   });
+};
+
+export let allByUser = (_id) => {
+  l('all areas for user');
+  return UserAreaModel.findAsync({user: _id});
 };

@@ -20,26 +20,14 @@ let UserSchema = new mongoose.Schema({
     match: [/.+\@.+\..+/, 'Please fill a valid email address']
   },
   name: {
-    type: String,
-    validate: [validateLocalProvider, 'Please fill in your name'],
-    trim: true
+    type: String, trim: true,
+    validate: [validateLocalProvider, 'Please fill in your name']
   },
-  password: {
-    type: String, required: true
-  },
-  salt: {
-    type: String
-  },
-  provider: {
-    type: String, required: 'Provider is required'
-  },
-  updated: {
-    type: Date
-  },
-  created: {
-    type: Date,
-    default: Date.now
-  }
+  password: {type: String, required: true},
+  salt: {type: String},
+  provider: { type: String, required: 'Provider is required'},
+  updated: {type: Date},
+  created: {type: Date, default: Date.now}
 });
 
 

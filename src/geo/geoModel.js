@@ -12,15 +12,10 @@ export let BaseGeoSchema = function() {
 
   this.add({
     // Location in WGS84 compliant form
-    loc: {
-      type: [Number], index: '2dsphere', required: true
-    },
-    created: {
-      type: Date, default: Date.now
-    },
-    user: {
-      type: m.Schema.Types.ObjectId, index: true, required: false, ref: 'User'
-    }
+    loc: {type: [Number], index: '2dsphere', required: true},
+    created: {type: Date, default: Date.now},
+    updated: {type: Date},
+    user: {type: m.Schema.Types.ObjectId, index: true, required: false, ref: 'User'}
   });
 };
 util.inherits(BaseGeoSchema, m.Schema);
