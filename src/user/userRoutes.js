@@ -1,9 +1,8 @@
-import * as u                    from './user';
-import * as token                from './../token';
-//import {emitToUsers}             from './userStream';
-//import {UnauthorizedAccessError} from './../errorsUtil';
-import _                         from 'lodash';
-import winston                   from 'winston';
+import _          from 'lodash';
+import winston    from 'winston';
+import * as u     from './user';
+import * as area  from './../user/userArea';
+import * as token from './../utils/token';
 
 const l = function(msg) {winston.log('info', 'userRoutes:', msg);};
 
@@ -41,6 +40,14 @@ export default function setUserRoutes(router) {
   router.get('/api/v1/user', (req, res, next) => {
     u.findOne(req.user.email).then(user => {
       res.json(resUser(user));
+    }).catch(err => {
+      //TODO: error handling
+      next(new Error(err));
+    });});
+
+  router.post('/api/v1/user/area', (req, res, next) => {
+    area.create(req.user._id, req.body.loc[0], req.body.loc[1], req.body.radius).then(area => {
+      res.json(area);
     }).catch(err => {
       //TODO: error handling
       next(new Error(err));

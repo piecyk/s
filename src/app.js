@@ -1,21 +1,24 @@
 import express    from 'express';
 import http       from 'http';
 import bodyParser from 'body-parser';
-import {cors}     from './util';
-import routes     from './routes';
 import morgan     from 'morgan';
+import routes     from './routes';
 
 import socketio     from 'socket.io';
 import {setIo}      from './user/userStream';
 //import socketioJwt  from 'socketio-jwt';
 
-import {errorHandler, NotFoundError} from './errorsUtil';
-import expressJwt                    from 'express-jwt';
-import {JWT_SECRET}                  from './config';
+import {cors}         from './utils/util';
+import {errorHandler, NotFoundError} from './utils/errorHandler';
+import {JWT_SECRET}   from './config';
+import expressJwt     from 'express-jwt';
 
 
 let app    = express();
 let server = http.createServer(app);
+
+// Showing stack errors
+app.set('showStackError', true);
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());

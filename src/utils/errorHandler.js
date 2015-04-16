@@ -1,18 +1,24 @@
 //TODO: re-factor
-import winston                   from 'winston';
+import winston from 'winston';
 
 const l = function(msg) {winston.log('info', 'errorsUtils:', msg);};
-
-export class UnauthorizedAccessError extends Error {
-  constructor(code, error) {
-    super(this, error);
-    this.name = "UnauthorizedAccessError";
-    this.message = error;
-    this.code = code;
-    this.status = 401;
-    this.inner = error;
-  }
+const type = {
+  UnauthorizedAccessError: 0,
+  UnauthorizedError: 1,
+  NotFoundError: 2,
+  BadRequestError: 3
 };
+
+// export class UnauthorizedAccessError extends Error {
+//   constructor(code, error) {
+//     super(this, error);
+//     this.name = "UnauthorizedAccessError";
+//     this.message = error;
+//     this.code = code;
+//     this.status = 401;
+//     this.inner = error;
+//   }
+// };
 
 export class NotFoundError extends Error {
   constructor(code, error) {

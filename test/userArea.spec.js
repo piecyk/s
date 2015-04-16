@@ -13,4 +13,14 @@ describe('UserArea flows', () => {
           expect(areas).to.have.length(2);
         }).then(done);});});});
 
+  it('create user area for user', (done) => {
+    var params = {loc: [1,2], radius: 5};
+    return UserHelper.api('post', '/api/v1/user/area', params)
+      .then(body => {
+        console.log(body);
+        expect(body).to.have.property('_id');
+        done();
+      }, err => done(err));
+  });
+
 });

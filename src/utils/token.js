@@ -1,6 +1,6 @@
 import _              from 'lodash';
 import jwt            from 'jsonwebtoken';
-import { JWT_SECRET, TOKEN_EXPIRATION } from './config';
+import { JWT_SECRET, TOKEN_EXPIRATION } from './../config';
 
 //TODO: store it in monog
 //TODO: for now simple

@@ -4,30 +4,10 @@ import P        from 'bluebird';
 import util     from 'util';
 import winston  from 'winston';
 
-const l = function(msg) {winston.log('info', msg);};
+import {BaseGeoSchema, GeoSchema, GeoModel} from './../geo/geoModel';
+
+const l = function(msg) {winston.log('info', 'userArea:', msg);};
 const m = P.promisifyAll(mongoose);
-
-function BaseGeoSchema() {
-  m.Schema.apply(this, arguments);
-
-  this.add({
-    // Location in WGS84 compliant form
-    loc: {
-      type: [Number], index: '2dsphere', required: true
-    },
-    created: {
-      type: Date, default: Date.now
-    },
-    user: {
-      type: m.Schema.Types.ObjectId, index: true, required: false, ref: 'User'
-    }
-  });
-}
-util.inherits(BaseGeoSchema, m.Schema);
-
-export const GeoSchema = new BaseGeoSchema();
-export const GeoModel = m.models.GeoModel ? m.model('GeoModel') : m.model('GeoModel', GeoSchema);
-
 
 export const UserAreaSchema = new BaseGeoSchema({
   radius: {
@@ -40,5 +20,7 @@ export const UserAreaModel = m.models.UserAreaModel ? m.model('UserAreaModel') :
 export let create = (_id, lng, lat, radius) => {
   l('create user area');
   let params = {user: _id, loc: [lng, lat], radius: radius};
-  return (new UserAreaModel(params)).saveAsync();
+  return (new UserAreaModel(params)).saveAsync().then(function(area) {
+    return area[0];
+  });
 };
