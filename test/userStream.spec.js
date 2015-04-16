@@ -30,29 +30,6 @@ describe('UserStream flows', () => {
 
   });
 
-  it('emit to all users', (done) => {
-    let ios = createIos(2);
-    let msgs = [];
-
-    let check = function(client){
-      client.on('userStream:main', function(msg){
-        msgs.push((msg));
-        if (msgs.length === 6) {
-          cleanIos(ios);
-          done();
-        };
-      });
-    };
-
-    ios[0].on('connect', () => check(ios[0]));
-    ios[1].on('connect', () => check(ios[1]));
-
-    UserHelper.register();
-    UserHelper.register();
-    UserHelper.register();
-
-  });
-
   it('public ping', (done) => {
     let ios = createIos(2);
     let msgs = [];
