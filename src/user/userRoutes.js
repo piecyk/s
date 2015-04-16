@@ -19,6 +19,7 @@ export default function setUserRoutes(router) {
       res.json(resUser(user));
     }).catch(err => {
       //TODO: error handling
+      l(err);
       return res.status(500).json(err);
     });});
 
@@ -27,6 +28,7 @@ export default function setUserRoutes(router) {
       res.json(resUser(user));
     }).catch(err => {
       //TODO: error handling
+      l(err);
       return res.status(500).json(err);
     });});
 
@@ -35,6 +37,7 @@ export default function setUserRoutes(router) {
       res.json(resUser(user));
     }).catch(err => {
       //TODO: error handling
+      l(err);
       return res.status(500).json(err);
     });});
 
@@ -43,6 +46,7 @@ export default function setUserRoutes(router) {
       res.json(resUser(user));
     }).catch(err => {
       //TODO: error handling
+      l(err);
       return res.status(500).json(err);
     });});
 
