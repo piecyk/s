@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 import _        from 'lodash';
 import P        from 'bluebird';
 import util     from 'util';
-import logger   from 'mm-node-logger';
+import winston  from 'winston';
 
-const l = logger(module);
+const l = function(msg) {winston.log('info', msg);};
 const m = P.promisifyAll(mongoose);
 
 function BaseGeoSchema() {
@@ -38,7 +38,7 @@ export const UserAreaModel = m.models.UserAreaModel ? m.model('UserAreaModel') :
 
 
 export let create = (_id, lng, lat, radius) => {
-  l.info('create user area');
+  l('create user area');
   let params = {user: _id, loc: [lng, lat], radius: radius};
   return (new UserAreaModel(params)).saveAsync();
 };

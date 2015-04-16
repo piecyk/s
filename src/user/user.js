@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 import bcryptjs from 'bcryptjs';
 import _        from 'lodash';
 import P        from 'bluebird';
-import logger   from 'mm-node-logger';
+import winston  from 'winston';
 
-const l = logger(module);
+const l = function(msg) {winston.log('info', msg);};
 const m = P.promisifyAll(mongoose);
 const b = P.promisifyAll(bcryptjs);
 const SALT_WORK_FACTOR = 10;

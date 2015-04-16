@@ -3,9 +3,9 @@ import * as token                from './../token';
 import {emitToUsers}             from './userStream';
 //import {UnauthorizedAccessError} from './../errorsUtil';
 import _                         from 'lodash';
-import logger                    from 'mm-node-logger';
+import winston                   from 'winston';
 
-const l = logger(module);
+const l = function(msg) {winston.log('info', msg);};
 
 function resUser(user) {
   return _.assign(_.omit(user.toObject(), ['password', 'salt']),

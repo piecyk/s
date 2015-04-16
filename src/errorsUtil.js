@@ -1,4 +1,8 @@
 //TODO: re-factor
+import winston                   from 'winston';
+
+const l = function(msg) {winston.log('info', msg);};
+
 export class UnauthorizedAccessError extends Error {
   constructor(code, error) {
     super(this, error);
@@ -22,7 +26,7 @@ export class NotFoundError extends Error {
 };
 
 export let errorHandler = function(err, req, res, next) {
-  console.log(err);
+  l(err);
 
   let errorType = typeof err,
       code = 500,
