@@ -5,7 +5,7 @@ import * as token                from './../token';
 import _                         from 'lodash';
 import winston                   from 'winston';
 
-const l = function(msg) {winston.log('info', msg);};
+const l = function(msg) {winston.log('info', 'userRoutes:', msg);};
 
 function resUser(user) {
   return _.assign(_.omit(user.toObject(), ['password', 'salt']),
@@ -19,8 +19,7 @@ export default function setUserRoutes(router) {
       res.json(resUser(user));
     }).catch(err => {
       //TODO: error handling
-      l(err);
-      res.status(500).json(err);
+      next(new Error(err));
     });});
 
   router.post('/login', (req, res, next) => {
@@ -28,8 +27,7 @@ export default function setUserRoutes(router) {
       res.json(resUser(user));
     }).catch(err => {
       //TODO: error handling
-      l(err);
-      res.status(500).json(err);
+      next(new Error(err));
     });});
 
   router.put('/api/v1/user', (req, res, next) => {
@@ -37,8 +35,7 @@ export default function setUserRoutes(router) {
       res.json(resUser(user));
     }).catch(err => {
       //TODO: error handling
-      l(err);
-      res.status(500).json(err);
+      next(new Error(err));
     });});
 
   router.get('/api/v1/user', (req, res, next) => {
@@ -46,8 +43,7 @@ export default function setUserRoutes(router) {
       res.json(resUser(user));
     }).catch(err => {
       //TODO: error handling
-      l(err);
-      res.status(500).json(err);
+      next(new Error(err));
     });});
 
 }

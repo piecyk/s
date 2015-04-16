@@ -1,7 +1,7 @@
 //TODO: re-factor
 import winston                   from 'winston';
 
-const l = function(msg) {winston.log('info', msg);};
+const l = function(msg) {winston.log('info', 'errorsUtils:', msg);};
 
 export class UnauthorizedAccessError extends Error {
   constructor(code, error) {
@@ -27,25 +27,23 @@ export class NotFoundError extends Error {
 
 export let errorHandler = function(err, req, res, next) {
   l(err);
+  let code = 500;
+  return res.status(code).json(err);
 
-  let errorType = typeof err,
-      code = 500,
-      msg = { message: "Internal Server Error" };
-
-  switch (err.name) {
-  case "UnauthorizedError":
-    code = err.status;
-    msg = undefined;
-    break;
-  case "BadRequestError":
-  case "UnauthorizedAccessError":
-  case "NotFoundError":
-    code = err.status;
-    msg = err.inner;
-    break;
-  default:
-    break;
-  }
-
-  return res.status(code).json(msg);
+  //let errorType = typeof err;
+  //let msg = { message: "Internal Server Error" };
+  // switch (err.name) {
+  // case "UnauthorizedError":
+  //   code = err.status;
+  //   msg = undefined;
+  //   break;
+  // case "BadRequestError":
+  // case "UnauthorizedAccessError":
+  // case "NotFoundError":
+  //   code = err.status;
+  //   msg = err.inner;
+  //   break;
+  // default:
+  //   break;
+  // }
 };
