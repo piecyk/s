@@ -20,7 +20,7 @@ export default function setUserRoutes(router) {
     }).catch(err => {
       //TODO: error handling
       l(err);
-      return res.status(500).json(err);
+      res.status(500).json(err);
     });});
 
   router.post('/login', (req, res, next) => {
@@ -29,7 +29,7 @@ export default function setUserRoutes(router) {
     }).catch(err => {
       //TODO: error handling
       l(err);
-      return res.status(500).json(err);
+      res.status(500).json(err);
     });});
 
   router.put('/api/v1/user', (req, res, next) => {
@@ -38,7 +38,7 @@ export default function setUserRoutes(router) {
     }).catch(err => {
       //TODO: error handling
       l(err);
-      return res.status(500).json(err);
+      res.status(500).json(err);
     });});
 
   router.get('/api/v1/user', (req, res, next) => {
@@ -47,7 +47,7 @@ export default function setUserRoutes(router) {
     }).catch(err => {
       //TODO: error handling
       l(err);
-      return res.status(500).json(err);
+      res.status(500).json(err);
     });});
 
 }

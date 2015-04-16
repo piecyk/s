@@ -99,7 +99,9 @@ export let update = (email, password) => {
   var params = { password: password, updated: Date.now(), provider: 'local' };
   return findOne(email).then((user) => {
     if (_.isEmpty(user)) { throw new Error("we don't have this user, buuu"); }
-    return _.assign(user, params).saveAsync();
+    return _.assign(user, params).saveAsync().then(function(user) {
+      return user[0];
+    });
   });
 };
 
