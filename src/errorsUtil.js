@@ -28,7 +28,8 @@ export class NotFoundError extends Error {
 export let errorHandler = function(err, req, res, next) {
   l(err);
   let code = 500;
-  return res.status(code).json(JSON.stringify(err));
+  let msg = { message: err.toString() };
+  return res.status(code).json(msg);
 
   //let errorType = typeof err;
   //let msg = { message: "Internal Server Error" };
