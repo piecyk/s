@@ -24,7 +24,10 @@ export let create = (_id, lng, lat, radius, name) => {
   });
 };
 
-export let allByUser = (_id) => {
-  l('all areas for user');
+export let getAllByUser = (_id) => {
   return UserAreaModel.findAsync({user: _id});
+};
+
+export let getAllById = (_id) => {
+  return UserAreaModel.findAsync({_id: _id});
 };

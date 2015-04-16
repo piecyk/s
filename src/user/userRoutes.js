@@ -54,11 +54,14 @@ export default function setUserRoutes(router) {
     });});
 
   router.get('/api/v1/users/areas', (req, res, next) => {
-    area.allByUser(req.user._id).then(areas => {
+    area.getAllByUser(req.user._id).then(areas => {
       res.json(areas);
     }).catch(err => {
       //TODO: error handling
       next(new Error(err));
     });});
 
+  //TODO: GET /api/v1/users/:id
+  //TODO: GET /api/v1/users/:id/areas
+  //TODO: GET /api/v1/users/:id/areas/:id
 }

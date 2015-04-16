@@ -11,6 +11,9 @@ export function setIo(_io) {
 
 function stream(socket) {
 
+  //TODO: add auth, secure with token get user id,
+  // the { userId : _id, socket: socket }
+
   sockets.push(socket);
   console.log('connected: ', socket.handshake.address);
 
