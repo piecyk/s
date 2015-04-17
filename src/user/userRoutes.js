@@ -7,15 +7,15 @@ import * as token from './../utils/token';
 const log = function() {winston.log('info', 'userRoutes:', arguments);};
 
 function resUser(user) {
-  return _.assign(_.omit(user.toObject(), ['password', 'salt']),
-                  token.create(user));
+  return _.omit(user.toObject(), ['password', 'salt']);
 }
 
 export default function setUserRoutes(router) {
 
   router.post('/register', (req, res, next) => {
     u.create(req.body.email, req.body.password).then(user => {
-      res.json(resUser(user));
+      let _user = _.assign(resUser(user), token.create(user));
+      res.json(_user);
     }).catch(err => {
       //TODO: error handling
       next(new Error(err));
@@ -23,7 +23,8 @@ export default function setUserRoutes(router) {
 
   router.post('/login', (req, res, next) => {
     u.login(req.body.email, req.body.password).then(user => {
-      res.json(resUser(user));
+      let _user = _.assign(resUser(user), token.create(user));
+      res.json(_user);
     }).catch(err => {
       //TODO: error handling
       next(new Error(err));
