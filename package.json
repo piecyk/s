@@ -30,7 +30,9 @@
   "scripts": {
     "start": "./node_modules/.bin/webpack --optimize-minimize --optimize-occurence-order && node ./build/bundle.js",
     "test": "./node_modules/.bin/mocha --compilers js:./node_modules/babel-core/register.js",
-    "testw": "./node_modules/.bin/nodemon ./node_modules/.bin/mocha --compilers js:./node_modules/babel-core/register.js"
+    "testw": "./node_modules/.bin/nodemon ./node_modules/.bin/mocha --compilers js:./node_modules/babel-core/register.js",
+    "testww": "./node_modules/.bin/nodemon -w 'src/**/*' -w 'test/**/*' --ext 'js json' ./node_modules/.bin/mocha --compilers js:./node_modules/babel-core/register.js",
+    "testwd": "./node_modules/.bin/nodemon --debug -w 'src/**/*' -w 'test/**/*' --ext 'js json' ./node_modules/.bin/mocha --compilers js:./node_modules/babel-core/register.js"
   },
   "author": "",
   "license": "ISC",

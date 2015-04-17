@@ -21,6 +21,7 @@ let server = http.createServer(app);
 app.set('showStackError', true);
 
 app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.all('/*', cors);

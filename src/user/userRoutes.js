@@ -46,8 +46,11 @@ export default function setUserRoutes(router) {
       next(new Error(err));
     });});
 
+
+  //TODO: think about the api names and params
+
   // router.get('/api/v1/users/:userId', (req, res, next) => {
-  //   u.findOneById(req.query.userId).then(user => {
+  //   u.findOneById(req.req.params.userId).then(user => {
   //     res.json(resUser(user));
   //   }).catch(err => {next(new Error(err));});});
 
