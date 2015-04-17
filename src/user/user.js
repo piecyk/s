@@ -12,8 +12,7 @@ const SALT_WORK_FACTOR = 10;
 function validateLocalProvider(property) {
   return ((this.provider !== 'local' && !this.updated) || property.length);
 }
-
-let UserSchema = new mongoose.Schema({
+export let UserSchema = new mongoose.Schema({
   email: {
     type: String, trim: true, unique: true, required: true, lowercase: true,
     validate: [validateLocalProvider, 'Please fill in your email'],
@@ -29,15 +28,6 @@ let UserSchema = new mongoose.Schema({
   updated: {type: Date},
   created: {type: Date, default: Date.now}
 });
-
-
-UserSchema.path('email').validate((email) => {
-  return !_.isEmpty(email);
-}, 'Email cannot be blank');
-
-UserSchema.path('password').validate((password) => {
-  return !_.isEmpty(password);
-}, 'Password cannot be blank');
 
 UserSchema.path('email').validate(function(value, respond) {
   var self = this;
@@ -66,12 +56,15 @@ UserSchema.methods.comparePassword = function(password) {
     return b.compareAsync(password, self.password);
   });
 };
+export let UserModel = m.model('User', UserSchema);
 
-export const UserModel = m.models.User ? m.model('User') : m.model('User', UserSchema);
 
-
-export let findOne = (email) => {
+export let findOneByEmail = (email) => {
   return UserModel.findOneAsync({email: email});
+};
+
+export let findOneById = (id) => {
+  return UserModel.findOneAsync({_id: id});
 };
 
 export let create = (email, password, provider) => {
@@ -85,7 +78,7 @@ export let create = (email, password, provider) => {
 
 export let update = (email, password) => {
   var params = { password: password, updated: Date.now(), provider: 'local' };
-  return findOne(email).then((user) => {
+  return findOneByEmail(email).then((user) => {
     if (_.isEmpty(user)) { throw new Error("we don't have this user, buuu"); }
     return _.assign(user, params).saveAsync().then(function(user) {
       return user[0];
@@ -94,7 +87,7 @@ export let update = (email, password) => {
 };
 
 export let login = (email, password) => {
-  return findOne(email).then((user) => {
+  return findOneByEmail(email).then((user) => {
     if (_.isEmpty(user)) { throw new Error("we don't have this user, buuu"); }
     return user.comparePassword(password).then((isMatch) => {
       if (isMatch) { return user; }

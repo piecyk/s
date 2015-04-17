@@ -1,4 +1,5 @@
 import { a, expect, UserHelper, ioConnect, createIos, cleanIos } from './helper';
+import P from 'bluebird';
 
 
 describe('UserStream flows', () => {
@@ -31,28 +32,41 @@ describe('UserStream flows', () => {
   });
 
   it('public ping', (done) => {
-    let ios = createIos(2);
-    let msgs = [];
+    UserHelper.login().then(res => {
+      let token = res.body.token;
 
-    let check = function(client){
-      client.on('userStream:main', function(msg){
-        console.log('msg:', msg);
-        msgs.push((msg));
-        if (msgs.length === 2) {
-          cleanIos(ios);
-          done();
-        };
+      let io1 = ioConnect({
+        query: 'token=' + token
       });
-    };
+      let io2 = ioConnect();
+      let msgs = [];
 
-    ios[0].on('connect', () => check(ios[0]));
-    ios[1].on('connect', () => check(ios[1]));
+      let check = function(client){
+        client.on('userStream:main', function(msg){
+          console.log('msg:', msg);
+          msgs.push((msg));
+          if (msgs.length === 1) {
+            io1.disconnect();
+            io2.disconnect();
+            done();
+          };
+        });
+      };
 
-    a.get('/ping')
-      .expect(200)
-      .end(function(err, res) {
-        if (err) { throw err; }
+      P.all([io1.onAsync('connect'), io2.onAsync('connect')]).then(() => {
+        console.log('all?;');
+        check(io1);
+        check(io2);
+
+        a.get('/ping')
+          .expect(200)
+          .end(function(err, res) {
+            if (err) { throw err; }
+          });
       });
+
+    }, err => { done(err); });
+
   });
 
 });

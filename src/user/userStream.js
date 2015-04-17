@@ -1,33 +1,51 @@
-//import socketio from 'socket.io';
+import {authorize} from './../utils/token';
+import winston     from 'winston';
+import async       from 'async';
 
+
+const log = function() {
+  winston.log('info', 'userStream:', arguments);
+};
+const Chan = {
+  UserStreamMain: 'userStream:main'
+};
 export let io;
 export let sockets = [];
 
 //TODO: maybe not best why, but for now ...
 export function setIo(_io) {
   io = _io;
+  io.use(authorize());
   io.on('connection', socket => { stream(socket); });
 };
 
 function stream(socket) {
 
-  //TODO: add auth, secure with token get user id,
-  // the { userId : _id, socket: socket }
-
   sockets.push(socket);
-  console.log('connected: ', socket.handshake.address);
+  log('connected address: ', socket.handshake.address);
+  if (socket.handshake.user) {
+    log('connected user: ', socket.handshake.user._id);
+  }
 
   socket.on('ping', function (m) {
     socket.emit('pong', m);
   });
 
   socket.on('disconnect', () => {
-    console.log('disconnected');
+    log('disconnected');
     sockets = sockets.filter(s => s !== socket);
   });
 
 };
 
 export function emitToUsers(msg) {
-  io.sockets.emit('userStream:main', msg);
+  async.forEach(sockets, function(socket, done) {
+    if (socket.handshake.user) {
+      socket.emit(Chan.UserStreamMain, msg);
+      done();
+    } else {
+      //socket.emit(Chan.UserStreamMain, msg);
+      done();
+    }
+  });
 }

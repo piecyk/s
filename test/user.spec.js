@@ -57,13 +57,10 @@ describe('User flows', () => {
   });
 
   it('login user to get the token', (done) => {
-    UserHelper.login().then(
-      (res) => {
-        expect(res.body).to.have.property('token');
-        done();
-      },
-      (err) => { done(err); }
-    );
+    UserHelper.login().then(res => {
+      expect(res.body).to.have.property('token');
+      done();
+    }, err => { done(err); });
   });
 
   it('find user after register', (done) => {

@@ -4,30 +4,32 @@ import P        from 'bluebird';
 import util     from 'util';
 import winston  from 'winston';
 
-import {BaseGeoSchema, GeoSchema, GeoModel} from './../geo/geoModel';
+import {BaseGeoSchema, GeoModel} from './../geo/geoModel';
 
-const l = function(msg) {winston.log('info', 'userArea:', msg);};
+
+const log = function() {winston.log('info', 'userArea:', arguments);};
 const m = P.promisifyAll(mongoose);
 
-export const UserAreaSchema = new BaseGeoSchema({
-  name: String,
+export let UserAreaSchema = new BaseGeoSchema({
+  name: {type: String},
   radius: {type: Number, min: 1, max: 20, required: true}
 });
-export const UserAreaModel = m.models.UserAreaModel ? m.model('UserAreaModel') : GeoModel.discriminator('UserAreaModel', GeoSchema);
+
+export let UserAreaModel = GeoModel.discriminator('UserAreaModel', UserAreaSchema);
 
 
 export let create = (_id, lng, lat, radius, name) => {
-  l('create user area');
-  let params = {user: _id, loc: [lng, lat], radius: radius, name: name};
+  log('create user area');
+  let params = {user: _id, loc: [lng, lat], radius: radius, name: name || ''};
   return (new UserAreaModel(params)).saveAsync().then(function(area) {
     return area[0];
   });
 };
 
-export let getAllByUser = (_id) => {
+export let getAllByUserId = (_id) => {
   return UserAreaModel.findAsync({user: _id});
 };
 
-export let getAllById = (_id) => {
-  return UserAreaModel.findAsync({_id: _id});
+export let getOneById = (_id) => {
+  return UserAreaModel.findOneAsync({_id: _id});
 };

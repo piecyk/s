@@ -6,9 +6,10 @@ import _              from 'lodash';
 import Q              from 'q';
 import chai           from 'chai';
 import socketIoClient from 'socket.io-client';
+import P              from 'bluebird';
 
-
-let db_uri = 'mongodb://localhost/db_test';
+const socketIoClientP = P.promisifyAll(socketIoClient);
+const db_uri = 'mongodb://localhost/db_test';
 
 export let dropCollections = function(callback, toDropColl) {
   var collections = toDropColl || _.keys(mongoose.connection.collections);
@@ -47,12 +48,13 @@ export let a = request.agent(server);
 //TODO: wrap it, to use helper object
 //let socketURL = 'https://glacial-bastion-4043.herokuapp.com/';
 let socketURL = 'http://0.0.0.0:59177';
-let options ={
+let options = {
   transports: ['websocket'],
   'force new connection': true
 };
-export let ioConnect = function() {
-  return socketIoClient.connect(socketURL, options);
+export let ioConnect = function(_options) {
+  return socketIoClientP.connect(socketURL,
+                                 _.assign(_.clone(options), _options));
 };
 export function createIos(howMany) {
   return _.map(new Array(howMany), () => ioConnect());
@@ -79,13 +81,11 @@ export let UserHelper = (function() {
     return deferred.promise;
   }
 
-  function getToken(user) {
-    return userA('post', '/login', user || defaultUser, 200).then(
-      (res) => { return res.body.token; },
-      (err) => { return userA('post', '/register', defaultUser, 200).then(
-        (res) => {
-          return res.body.token;
-        }
+  function getUser(user, code) {
+    return userA('post', '/login', user || defaultUser, code || 200).then(
+      (res) => { return res; },
+      (err) => { return userA('post', '/register', defaultUser, code || 200).then(
+        (res) => { return res; }
       );}
     );
   }
@@ -98,17 +98,13 @@ export let UserHelper = (function() {
                    code || 200);
     },
     login: function(params, code) {
-      return userA('post', '/login',
-                   params || defaultUser,
-                   code || 200);
-
-
+      return getUser(params, code);
     },
     api: function(method, uri, params, code, headers, user) {
-      return getToken(user).then(
-        (token) => {
+      return getUser(user).then(
+        (res) => {
           let deferred = Q.defer();
-          let _headers = { 'Authorization': `Bearer ${token}` };
+          let _headers = { 'Authorization': `Bearer ${res.body.token}` };
 
           a[method](uri).set(_.extend(_headers, headers))
             .send(params)

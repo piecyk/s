@@ -4,17 +4,21 @@ import * as user from './../src/user/user';
 import mongoose  from 'mongoose';
 import P         from 'bluebird';
 
+const loc = {
+  rze: [50.04119, 21.99912]
+};
+
 describe('UserArea flows', () => {
 
   it('test', (done) => {
     user.create('sss@wp.pl', 'ss').then((_user) => {
-      P.all([area.create(_user._id, 1, 2, 2), area.create(_user._id, 2, 3, 5)]).then(() => {
+      P.all([area.create(_user._id, loc.rze[0], loc.rze[1], 2), area.create(_user._id, loc.rze[0], loc.rze[1], 5)]).then(() => {
         area.UserAreaModel.findAsync({user: _user._id}).then((areas) => {
           expect(areas).to.have.length(2);
         }).then(done);});});});
 
   it('create user area for user', (done) => {
-    var params = {loc: [1,2], radius: 5};
+    var params = {loc: loc.rze, radius: 5};
     return UserHelper.api('post', '/api/v1/users/areas', params)
       .then(body => {
         console.log(body);
@@ -24,8 +28,8 @@ describe('UserArea flows', () => {
 
   it('create two areas, and get them', (done) => {
     var user = {email: 'damian@wp.pl', password: 'damian'};
-    var params1 = {loc: [1,2], radius: 5};
-    var params2 = {loc: [3,5], radius: 2};
+    var params1 = {loc: loc.rze, radius: 5, name: "Moja dzielnia"};
+    var params2 = {loc: loc.rze, radius: 2};
     UserHelper.register(user).then(
       (res) => {
         P.all([
@@ -34,6 +38,7 @@ describe('UserArea flows', () => {
         ]).then(() => {
           UserHelper.api('get', '/api/v1/users/areas', null, null, null, user).then(function(areas) {
             console.log(areas);
+            expect(areas).to.have.length(2);
             done();
           });});});});
 

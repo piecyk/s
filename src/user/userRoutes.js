@@ -4,7 +4,7 @@ import * as u     from './user';
 import * as area  from './../user/userArea';
 import * as token from './../utils/token';
 
-const l = function(msg) {winston.log('info', 'userRoutes:', msg);};
+const log = function() {winston.log('info', 'userRoutes:', arguments);};
 
 function resUser(user) {
   return _.assign(_.omit(user.toObject(), ['password', 'salt']),
@@ -38,12 +38,17 @@ export default function setUserRoutes(router) {
     });});
 
   router.get('/api/v1/users', (req, res, next) => {
-    u.findOne(req.user.email).then(user => {
+    u.findOneByEmail(req.user.email).then(user => {
       res.json(resUser(user));
     }).catch(err => {
       //TODO: error handling
       next(new Error(err));
     });});
+
+  // router.get('/api/v1/users/:userId', (req, res, next) => {
+  //   u.findOneById(req.query.userId).then(user => {
+  //     res.json(resUser(user));
+  //   }).catch(err => {next(new Error(err));});});
 
   router.post('/api/v1/users/areas', (req, res, next) => {
     area.create(req.user._id, req.body.loc[0], req.body.loc[1], req.body.radius, req.body.name).then(area => {
@@ -54,12 +59,18 @@ export default function setUserRoutes(router) {
     });});
 
   router.get('/api/v1/users/areas', (req, res, next) => {
-    area.getAllByUser(req.user._id).then(areas => {
-      res.json(areas);
-    }).catch(err => {
+    area.getAllByUserId(req.user._id).then(areas => res.json(areas)).catch(err => {
       //TODO: error handling
       next(new Error(err));
     });});
+
+  // router.get('/api/v1/users/:userId/areas', (req, res, next) => {
+  //   area.getAllByUserId(req.query.userId).then(areas => {
+  //     res.json(areas);
+  //   }).catch(err => {
+  //     //TODO: error handling
+  //     next(new Error(err));
+  //   });});
 
   //TODO: GET /api/v1/users/:id
   //TODO: GET /api/v1/users/:id/areas
