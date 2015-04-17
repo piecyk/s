@@ -46,9 +46,6 @@ export default function setUserRoutes(router) {
       next(new Error(err));
     });});
 
-
-  //TODO: think about the api names and params
-
   // router.get('/api/v1/users/:userId', (req, res, next) => {
   //   u.findOneById(req.req.params.userId).then(user => {
   //     res.json(resUser(user));
@@ -75,8 +72,4 @@ export default function setUserRoutes(router) {
   //     //TODO: error handling
   //     next(new Error(err));
   //   });});
-
-  //TODO: GET /api/v1/users/:id
-  //TODO: GET /api/v1/users/:id/areas
-  //TODO: GET /api/v1/users/:id/areas/:id
 }
